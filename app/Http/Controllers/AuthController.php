@@ -161,6 +161,18 @@ class AuthController extends Controller
             return response()->json(['status' => 'error', 'message' => '服务器内部错误'], 500);
         }
     }
+
+    public function logout(Request $request)
+    {
+        // 清除cookieuse Illuminate\Support\Facades\Cookie;
+        $cookie = Cookie::forget('accessToken');
+
+        // 使用Auth facade登出用户
+        Auth::logout();
+
+        // 返回JSON响应并清除cookie
+        return response()->json(['status' => 'success', 'data' => null])->withCookie($cookie);
+    }
     
 
     // 刷新 token 的方法
