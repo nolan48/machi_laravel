@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Models\User;
+use App\Http\Controllers\ProductController;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
 Route::get('generate-token', function () {
@@ -37,6 +38,9 @@ Route::get('generate-token', function () {
         });
     });
 
+    //商品用
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{id}', [ProductController::class, 'show']);
 
 
 

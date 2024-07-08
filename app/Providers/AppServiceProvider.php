@@ -6,12 +6,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 
 class RouteServiceProvider extends ServiceProvider
 {
-    /**
-     * 定义应用程序的 "home" 路径。
-     *
-     * @var string
-     */
-    public const HOME = '/home';
+
 
     /**
      * 这个命名空间被应用到你的控制器路由。
@@ -32,6 +27,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
+                
         });
     }
 }
