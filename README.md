@@ -5,4 +5,10 @@ laravel框架練習試做
 
 啟動請輸入:
 
+composer install
+
+npm install
+
+php artisan migrate
+
 php artisan serve --port=3005
