@@ -3,7 +3,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-
+use App\Http\Middleware\JwtMiddleware;
 class RouteServiceProvider extends ServiceProvider
 {
 
@@ -21,6 +21,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+                // 注册路由中间件
+                Route::aliasMiddleware('auth.jwt', JwtMiddleware::class);
         $this->configureRateLimiting();
 
         $this->routes(function () {

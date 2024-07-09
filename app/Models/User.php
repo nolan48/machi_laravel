@@ -1,18 +1,18 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
     protected $primaryKey = 'user_id';
-
     protected $table = 'users';
+
 
     protected $fillable = [
         'user_name', 'user_nickname', 'user_account', 'user_password',
@@ -25,9 +25,10 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'user_password', 'remember_token',
     ];
-    
+
     public function getJWTIdentifier()
     {
+        Log::info('Getting JWT Identifier: ' . $this->getKey());
         return $this->getKey();
     }
 

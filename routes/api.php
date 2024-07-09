@@ -7,6 +7,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Middleware\JwtMiddleware;
 use App\Models\User;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ProductFavoriteController;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
 Route::get('generate-token', function () {
@@ -41,6 +43,20 @@ Route::get('generate-token', function () {
     //商品用
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{id}', [ProductController::class, 'show']);
+    
+
+
+        Route::get('product-favorite', [ProductFavoriteController::class, 'index'])->middleware(JwtMiddleware::class);
+        Route::put('product-favorite/{id}', [ProductFavoriteController::class, 'store'])->middleware(JwtMiddleware::class);
+        Route::delete('product-favorite/{id}', [ProductFavoriteController::class, 'destroy'])->middleware(JwtMiddleware::class);
+
+
+
+    //課程用
+    Route::get('course', [CourseController::class, 'index']);
+    Route::get('course/{id}', [CourseController::class, 'show']);
+
+    
 
 
 
