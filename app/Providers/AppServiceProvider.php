@@ -4,6 +4,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use App\Http\Middleware\JwtMiddleware;
+use App\Services\LinePayService;
 class RouteServiceProvider extends ServiceProvider
 {
 
@@ -30,6 +31,13 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
                 
+        });
+    }
+
+    public function register()
+    {
+        $this->app->singleton(LinePayService::class, function ($app) {
+            return new LinePayService();
         });
     }
 }
