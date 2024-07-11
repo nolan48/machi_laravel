@@ -15,6 +15,9 @@ use App\Http\Controllers\OrderController;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
+
 
     //會員系統
     Route::post('auth/login', [AuthController::class, 'login']);
@@ -68,5 +71,19 @@ use App\Http\Controllers\CategoryController;
     });
 
 
-
+    //分類
     Route::get('/category', [CategoryController::class, 'index']);
+
+    //文章
+    Route::prefix('articles')->group(function () {
+        Route::post('/publish', [ArticleController::class, 'publish']);
+        Route::post('/upload', [ArticleController::class, 'upload']);
+        Route::get('/', [ArticleController::class, 'getArticles']);
+        Route::get('/filtered', [ArticleController::class, 'getFilteredArticles']);
+        Route::get('/{id}', [ArticleController::class, 'getArticleById']);
+    });
+    
+    Route::prefix('comments')->group(function () {
+        Route::post('/commit', [CommentController::class, 'commit']);
+        Route::get('/{id}', [CommentController::class, 'getCommentsByArticleId']);
+    });

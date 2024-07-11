@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,6 @@ class User extends Authenticatable implements JWTSubject
 
     protected $primaryKey = 'user_id';
     protected $table = 'users';
-
 
     protected $fillable = [
         'user_name', 'user_nickname', 'user_account', 'user_password',
@@ -45,5 +45,17 @@ class User extends Authenticatable implements JWTSubject
     public function getAuthPassword()
     {
         return $this->user_password;
+    }
+
+    // 定义 User 和 Article 之间的一对多关系
+    public function articles()
+    {
+        return $this->hasMany(Article::class, 'user_id_fk');
+    }
+
+    // 定义 User 和 ArticleComment 之间的一对多关系
+    public function comments()
+    {
+        return $this->hasMany(ArticleComment::class, 'user_id_fk');
     }
 }

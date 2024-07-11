@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Order extends Model
 {
@@ -10,7 +11,8 @@ class Order extends Model
 
     protected $table = 'order';
     protected $primaryKey = 'order_id';
-    public $timestamps = false; // 如果你不需要 timestamps，保持 false
+
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id_fk',
@@ -21,10 +23,21 @@ class Order extends Model
         'order_amount',
         'order_total',
         'order_status',
-        'order_createtime',
     ];
+
+    const CREATED_AT = 'order_createtime';
+    const UPDATED_AT = null;
 
     protected $dates = [
         'order_createtime',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->{static::CREATED_AT} = Carbon::now()->addHours(8);
+        });
+    }
 }
