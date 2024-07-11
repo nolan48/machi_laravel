@@ -14,7 +14,7 @@ use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\OrderController;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\CategoryController;
 
     //會員系統
     Route::post('auth/login', [AuthController::class, 'login']);
@@ -69,3 +69,4 @@ use App\Http\Controllers\PaymentController;
 
 
 
+    Route::get('/category', [CategoryController::class, 'index']);
