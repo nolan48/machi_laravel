@@ -25,16 +25,16 @@ class JwtMiddleware
 
         try {
             JWTAuth::setToken($token);
-            Log::info('Token set: ' . $token);
+            // Log::info('Token set: ' . $token);
 
             $payload = JWTAuth::getPayload();
-            Log::info('Token payload: ' . json_encode($payload));
+            // Log::info('Token payload: ' . json_encode($payload));
 
             $sub = $payload->get('sub');
-            Log::info('Token subject (sub): ' . $sub);
+            // Log::info('Token subject (sub): ' . $sub);
 
             $user = User::find($sub);
-            Log::info('User found with User::find: ' . json_encode($user));
+            // Log::info('User found with User::find: ' . json_encode($user));
 
             if (!$user) {
                 Log::error('User not found for sub: ' . $sub);

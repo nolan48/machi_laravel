@@ -18,7 +18,10 @@ class PaymentController extends Controller
 
     public function reserve(Request $request)
     {
+        Log::info('PaymentController reserve method called', ['request' => $request->all()]);
+
         if (!$request->query('orderId')) {
+            Log::error('order id不存在');
             return response()->json(['status' => 'error', 'message' => 'order id不存在']);
         }
 
@@ -38,13 +41,15 @@ class PaymentController extends Controller
             'cancelUrl' => $cancelUrl,
         ];
 
-        // 從資料庫取得訂單資料
+        // 从数据库取得订单数据
         $orderRecord = Order::find($orderId);
 
-        // 确保orderRecord存在
+        // 确保订单记录存在
         if (!$orderRecord) {
+            Log::error('訂單不存在', ['orderId' => $orderId]);
             return response()->json(['status' => 'error', 'message' => '訂單不存在']);
         }
+
         $order = [
             'orderId' => $orderId,
             'currency' => 'TWD',
@@ -77,7 +82,7 @@ class PaymentController extends Controller
         try {
             $linePayResponse = $this->linePayService->reserve($order);
 
-            // 增加日志记录以检查linePayResponse的结构
+            // 增加日志记录以检查 linePayResponse 的结构
             Log::info('LINE Pay Response:', ['response' => $linePayResponse]);
 
             if (isset($linePayResponse['info']['paymentUrl']['web'])) {
