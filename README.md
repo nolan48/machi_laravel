@@ -12,3 +12,5 @@ npm install
 php artisan migrate
 
 php artisan serve --port=3005
+
+目前部落格.會員部分功能尚未實裝

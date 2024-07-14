@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use DOMDocument;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+
 
 class ArticleController extends Controller
 {
@@ -102,14 +105,14 @@ class ArticleController extends Controller
         $start = $request->input('start', '1970-01-01');
         $end = $request->input('end', '2050-01-01');
         $selectedCategories = $request->input('selectedCategories', '');
-
+    
         try {
             $query = Article::query();
-
+    
             if ($search) {
                 $query->where('article_title', 'like', '%' . $search . '%');
             }
-
+    
             if ($selectedCategories) {
                 $query->where(function ($q) use ($selectedCategories) {
                     $categories = explode(',', $selectedCategories);
@@ -118,57 +121,68 @@ class ArticleController extends Controller
                     }
                 });
             }
-
+    
             if ($start && $end) {
                 $query->whereBetween('article_createtime', [$start, $end]);
             }
-
+    
             $page = $request->input('page', 1);
             $perpage = $request->input('perpage', 16);
             $articles = $query->paginate($perpage, ['*'], 'page', $page);
-
-            $articlesWithFirstImage = $articles->getCollection()->map(function ($article) {
+    
+            // 將分頁結果轉換為數據集合
+            $articlesData = $articles->items();
+    
+            // 對集合應用 map 方法
+            $articlesWithFirstImage = array_map(function ($article) {
                 $dom = new DOMDocument();
-                libxml_use_internal_errors(true); // 禁用 libxml 错误处理
-
-                $dom->loadHTML($article->article_content);
+                libxml_use_internal_errors(true); // 禁用 libxml 錯誤處理
+    
+                $dom->loadHTML($article['article_content']);
                 $firstImage = $dom->getElementsByTagName('img')->item(0);
                 $firstImageUrl = '';
-
-                if ($firstImage) {
+    
+                if ($firstImage instanceof \DOMElement) {
                     $firstImageUrl = $firstImage->getAttribute('src');
                     if (!$firstImageUrl) {
-                        Log::error('The first image element does not have a src attribute for article ID: ' . $article->id);
+                        Log::error('The first image element does not have a src attribute for article ID: ' . $article['id']);
                     }
                 } else {
-                    Log::warning('No image found in article content for article ID: ' . $article->id);
+                    Log::warning('No image found in article content for article ID: ' . $article['id']);
                 }
-
-                // 清除错误
+    
+                // 清除錯誤
                 libxml_clear_errors();
-
-                // 确保 array_merge 正确使用模型的属性
-                return array_merge($article->toArray(), ['firstImageUrl' => $firstImageUrl]);
-            });
-
-            // 替换原始集合
-            $articles->setCollection($articlesWithFirstImage);
-
+    
+                // 確保 array_merge 正確使用模型的屬性
+                return array_merge($article, ['firstImageUrl' => $firstImageUrl]);
+            }, $articlesData);
+    
+            // 創建新的分頁器
+            $paginatedArticles = new LengthAwarePaginator(
+                $articlesWithFirstImage,
+                $articles->total(),
+                $articles->perPage(),
+                $articles->currentPage(),
+                ['path' => LengthAwarePaginator::resolveCurrentPath()]
+            );
+    
             return response()->json([
                 'status' => 'success',
                 'data' => [
-                    'total' => $articles->total(),
-                    'pageCount' => $articles->lastPage(),
-                    'page' => $articles->currentPage(),
-                    'perpage' => $articles->perPage(),
-                    'articles' => $articlesWithFirstImage,
+                    'total' => $paginatedArticles->total(),
+                    'pageCount' => $paginatedArticles->lastPage(),
+                    'page' => $paginatedArticles->currentPage(),
+                    'perpage' => $paginatedArticles->perPage(),
+                    'articles' => $paginatedArticles->items(),
                 ],
             ]);
         } catch (\Exception $e) {
             Log::error('Error in getFilteredArticles: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => '无法查询到数据，查询字符串可能有误'], 500);
+            return response()->json(['status' => 'error', 'message' => '無法查詢到數據，查詢字符串可能有誤'], 500);
         }
     }
+    
 
     public function getArticleById($id)
     {
