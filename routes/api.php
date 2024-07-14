@@ -71,19 +71,18 @@ use App\Http\Controllers\CommentController;
     });
 
 
-    //分類
+    //分類  
     Route::get('/category', [CategoryController::class, 'index']);
 
     //文章
-    Route::prefix('articles')->group(function () {
+    Route::prefix('blog')->group(function () {
         Route::post('/publish', [ArticleController::class, 'publish']);
         Route::post('/upload', [ArticleController::class, 'upload']);
-        Route::get('/', [ArticleController::class, 'getArticles']);
-        Route::get('/filtered', [ArticleController::class, 'getFilteredArticles']);
+        Route::get('/articles', [ArticleController::class, 'getArticles']);
+        Route::get('/articles/better', [ArticleController::class, 'getFilteredArticles']);
         Route::get('/{id}', [ArticleController::class, 'getArticleById']);
+        
+        Route::post('/commit', [CommentController::class, 'commit']);
+        Route::get('/comments/{id}', [CommentController::class, 'getCommentsByArticleId']);
     });
     
-    Route::prefix('comments')->group(function () {
-        Route::post('/commit', [CommentController::class, 'commit']);
-        Route::get('/{id}', [CommentController::class, 'getCommentsByArticleId']);
-    });
